@@ -37,8 +37,7 @@ The star schema was selected over a snowflake schema for the following reasons:
 ---
 
 ## Schema Diagram
-Section1_Data_Warehousing/retail_star_schema.drawio.png
-
+![alt text](Section1_Data_Warehousing/retail_star_schema.drawio.png)
 ---
 
 ### SQL Schema Script
@@ -87,8 +86,7 @@ CREATE TABLE fact_sales (
     FOREIGN KEY (store_id) REFERENCES dim_store(store_id)
 );
 
-```
-- To create the schema in SQLite, run this in the powrshell terminal:
+```- To create the schema in SQLite, run:
   ```bash
   sqlite3 retail_dw.db < dw_schema.sql
   ```
