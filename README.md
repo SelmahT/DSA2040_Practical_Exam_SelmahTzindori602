@@ -37,7 +37,7 @@ The star schema was selected over a snowflake schema for the following reasons:
 ---
 
 ## Schema Diagram
-![alt text](retail_star_schema.drawio.png)
+Section1_Data_Warehousing/retail_star_schema.drawio.png
 
 ---
 
