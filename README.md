@@ -44,7 +44,7 @@ Section1_Data_Warehousing/retail_star_schema.drawio.png
 ### SQL Schema Script
 
 - The SQL script file `dw_schema.sql` includes all the `CREATE TABLE` statements required to build the schema.
-- To create the schema in SQLite, run:
+- To create the schema in SQLite, run this in the powrshell terminal:
   ```bash
   sqlite3 retail_dw.db < dw_schema.sql
   ```
