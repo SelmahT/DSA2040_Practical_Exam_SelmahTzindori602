@@ -1,7 +1,222 @@
 # DSA 2040 Practical Exam - Data Warehousing and Data Mining
+---
+## Project Overview
+
+This project demonstrates a complete end-to-end data workflow using a synthetic retail dataset. It covers data warehousing, ETL processes, OLAP analysis, and data mining tasks. The goal is to simulate a real-world data analytics pipeline and generate actionable insights from structured retail data.
+
+---
+
+### Key Components
+
+1. **Data Warehousing**
+   - Design and implementation of a star-schema data warehouse.
+   - Schema and initial datasets stored in `Section1_Data_Warehousing`.
+
+2. **ETL Process**
+   - Extraction, transformation, and loading of synthetic retail data into the data warehouse.
+   - ETL notebooks and processed data located in `Section2_ETL_process`.
+
+3. **OLAP Queries & Analysis**
+   - Online Analytical Processing (OLAP) queries to analyze sales data.
+   - Query outputs and visualizations saved in `Section3_OLAP_Queries_Analysis`.
+
+4. **Data Mining**
+   - Preprocessing, clustering, and classification tasks on sample datasets (e.g., Iris and retail transaction data).
+   - Notebooks and visualizations found in `Section4_Data_Mining`.
+
+### Datasets
+- Synthetic retail sales data: `Section2_ETL_process/data/synthetic_retail_data.csv`
+- Retail data warehouse: `retail_dw.db`
+- Iris dataset (preprocessed) for clustering and classification tasks.
+
+### Objectives
+- Build a fully functional data warehouse.
+- Demonstrate ETL and OLAP workflows.
+- Perform exploratory data analysis and mining to extract insights.
+- Generate visualizations for easier interpretation of results.
+
+---
+
+### Repository structure
+
+
+- LICENSE
+- README.md
+
+- Section1_Data_Warehousing
+    - dw_schema.sql
+    - retail_dw.db
+    - retail_star_schema.drawio.png
+
+- Section2_ETL_process
+    - etl_process.log
+    - etl_retail.ipynb
+    - retail_dw.db
+    - data/
+        - synthetic_retail_data.csv
+        - transformed_retail_data.csv
+    - retail_tableoutputs_load/
+        - customerdimtable.PNG
+        - sales_facttable.PNG
+        - time_dimtable.PNG
+
+- Section3_OLAP_Queries_Analysis
+    - OLAP Queries Analysis Report.pdf
+    - olap_queries.ipynb
+    - olap_queries.sql
+    - retail_dw.db
+    - queries_results/
+        - drilldown_sales_uk_month.csv
+        - rollup_sales_by_country_quarter.csv
+        - slice_sales_electronics.csv
+    - queries_visualizations/
+        - monthlysales_australia.png
+        - salesbycountrybyquarter.png
+        - total_electronic_sales.png
+
+- Section4_Data_Mining
+    - task1_prep_explore/
+        - iris_preprocessed.csv
+        - preprocessing_iris.ipynb
+        - Visualizations_eda/
+            - boxplots_iris.png
+            - correlation_iris.png
+            - pairplot_iris.png
+    - task2_clustering/
+        - clustering_iris.ipynb
+        - visualizations_clustering/
+            - elbow_method.png
+            - kmeans3_clustering.png
+    - task3_mining/
+        - decision_tree_classifier.png
+        - mining_iris_basket.ipynb
+        - synthetic_transactions.csv
+
+---
+
+## How to Run
+
+---
+
+### 1. Clone the Repository
+
+```bash
+git clone <your-repo-url>
+cd <your-repo-folder>
+```
+
+---
+
+### 2. Install Dependencies
+```bash
+pip install -r requirements.txt
+```
+
+Required libraries include:
+
+- Python 3.x
+
+- pandas, numpy, scikit-learn, matplotlib, seaborn
+
+- sqlite3
+
+- mlxtend (for association rule mining)
+
+- jupyter (optional, to run notebooks)
+
+---
+
+
+### 3. Database Setup
+
+If using the provided SQLite database:
+
+```bash
+sqlite3 Section1_Data_Warehousing/retail_dw.db
+
+```
+
+
+---
+
+### 4. Run ETL Process
+
+```bash
+python Section2_ETL_process/etl_retail.ipynb
+
+```
+
+---
+
+### 5. OLAP Queries
+
+Run SQL queries directly:
+
+```bash
+sqlite3 Section1_Data_Warehousing/retail_dw.db < Section3_OLAP_Queries_Analysis/olap_queries.sql
+
+```
+
+Or open and execute the notebook:
+
+```bash
+jupyter notebook Section3_OLAP_Queries_Analysis/olap_queries.ipynb
+
+```
+
+---
+
+### 6. Data Mining Tasks
+
+Run notebooks or scripts in order:
+
+```bash
+python Section4_Data_Mining/task1_prep_explore/preprocessing_iris.py
+python Section4_Data_Mining/task2_clustering/clustering_iris.py
+python Section4_Data_Mining/task3_mining/mining_iris_basket.py
+
+```
+
+---
+
+## Self-Assessment
+
+### Tasks Completed
+- **Data Warehousing**
+  - Designed and implemented a star schema with fact and dimension tables.
+  - Loaded synthetic retail data into SQLite database.
+  - Performed ETL process with data validation and logging.
+- **OLAP Analysis**
+  - Executed roll-up, drill-down, and slice queries.
+  - Generated visualizations for sales trends.
+  - Analyzed insights from the warehouse.
+- **Data Mining**
+  - Preprocessed Iris dataset: normalization, encoding, outlier checks.
+  - Explored data with summary statistics, pairplots, and heatmaps.
+  - Performed K-Means clustering, visualized clusters, and evaluated using ARI.
+  - Trained Decision Tree and KNN classifiers, compared performance.
+  - Generated synthetic transaction data and applied Apriori for association rules.
+
+### Struggles Encountered
+- Handling missing or inconsistent data during ETL required careful cleaning.
+- Designing realistic synthetic datasets that mimic actual retail data was challenging.
+- Debugging SQL queries and ensuring database integrity took additional iterations.
+- Fine-tuning clustering and classification models to achieve meaningful results.
+
+### Improvements Made
+- Added detailed logging in ETL to track row processing and errors.
+- Enhanced visualizations with clear labels and insights for easier interpretation.
+- Structured notebooks with modular functions to allow reusability.
+- Used reproducible random seeds for synthetic data to ensure consistent results.
+
+### Overall Reflection
+This project allowed applying theoretical knowledge into a practical end-to-end data workflow. While generating synthetic datasets posed challenges, it improved understanding of data preparation, modeling, and analysis pipelines. The final submission includes working scripts, notebooks, generated datasets, visualizations, and reports, demonstrating a complete data warehousing and mining solution.
+
+---
+
 
 ## Section 1: Data Warehousing
-### Overview
+### Project  Overview
 
 This task involved designing a data warehouse star schema for a retail company that sells products across various categories, including electronics and clothing. The company tracks sales transactions, customer details, product information, and time data.
 
@@ -1288,3 +1503,125 @@ K-Means clustering can be applied in various domains, such as:
 
 The Iris dataset serves as an ideal demonstration due to its clear group structure and manageable size.
 ---
+
+## Task 3: Classification and Association Rule Mining
+
+### Part A: Classification
+
+In this task, we applied **two classification algorithms** on the preprocessed Iris dataset:
+
+1. **Decision Tree Classifier** – Chosen for its interpretability and ability to model decision rules.
+2. **K-Nearest Neighbors (KNN)** with `k=5` – Selected for its effectiveness in well-separated datasets.
+
+#### Steps Performed:
+- **Data Preparation**: Used features (`sepal length`, `sepal width`, `petal length`, `petal width`) as input variables and the actual species label as the target.
+- **Model Training**: Trained both classifiers using the training set (80%) and evaluated on the test set (20%).
+- **Metrics Computed**: Accuracy, Precision, Recall, and F1-score.
+- **Visualization**: Plotted the Decision Tree structure for interpretability.
+
+#### Decision Tree Visualization:
+![alt text](Section4_Data_Mining/task3_mining/decision_tree_classifier.png)
+
+#### Performance Summary:
+| Model              | Accuracy | Precision | Recall | F1-score |
+|--------------------|----------|-----------|--------|----------|
+| Decision Tree      | 0.9333   | 0.9333    | 0.9333 | 0.9333   |
+| KNN (k=5)          | 0.9667   | 0.9697    | 0.9667 | 0.9666   |
+
+#### Analysis:
+The **Decision Tree Classifier** achieved an accuracy of **93.33%**, while the **KNN Classifier** slightly outperformed it with **96.67%**. KNN’s higher performance can be attributed to the dataset’s clean separation, making distance-based classification highly effective. Decision Trees provide valuable interpretability but may slightly overfit at decision boundaries, leading to occasional misclassifications. Both models performed well, with minimal errors.
+
+In practical applications, such classification methods can be used for:
+- **Species identification** in botany.
+- **Quality inspection** in manufacturing.
+- **Customer segmentation** in marketing.
+
+Since the dataset is original (not synthetic), the results are trustworthy and applicable to similar classification problems.
+
+---
+
+## **Task 3 – Part B: Association Rule Mining**
+
+This section applies **market basket analysis** to uncover hidden purchase patterns  
+using **synthetic grocery transaction data**.
+
+---
+
+### **1. Dataset Generation**
+We created 20–50 synthetic transactions, each with 3–8 random items chosen from  
+a pool of 24 grocery products (e.g., bread, milk, pasta, rice). Certain co-purchase  
+patterns (e.g., rice–pasta) were intentionally embedded.
+
+---
+
+### **2. Method**
+We applied the **Apriori algorithm** (`mlxtend.frequent_patterns.apriori`) with:
+- **Minimum Support:** 0.2 (item must appear in ≥ 20% of transactions)
+- **Minimum Confidence:** 0.5 (rule must be correct ≥ 50% of the time)  
+Rules were sorted by **lift** to prioritize the strongest associations.
+
+---
+
+### **3. Sample Output**
+
+**Sample Synthetic Transactions:**
+
+| Transaction | Items                                                                 |  
+|-------------|----------------------------------------------------------------------|  
+| 1           | oranges, butter, yogurt, bananas, beer, grapes, bread, flour          |  
+| 2           | beer, sugar, rice, tea, bananas, cheese, milk, bread                  |  
+| 3           | chicken, bread, eggs, grapes, oranges, milk                          |  
+| 4           | chicken, tea, oranges, pasta, flour, apples, rice, sugar              |  
+| 5           | coffee, milk, apples, bananas, diapers, sugar, bread                  |  
+
+
+
+
+**Frequent Itemsets (min_support=0.2):**
+
+| Support itemsets | Value    |  
+|------------------|----------|  
+| bananas          | 0.541667 |  
+| bread            | 0.500000 |  
+| flour            | 0.500000 |  
+| milk             | 0.416667 |  
+| pasta            | 0.375000 |  
+| rice             | 0.375000 |  
+
+
+**Top 5 Rules Sorted by Lift:**
+
+
+| Rule                   | Confidence | Lift  |  
+|------------------------|------------|-------|  
+| rice → pasta           | 0.56       | 1.48  |  
+| pasta → rice           | 0.56       | 1.48  |  
+| beer → bread           | 0.71       | 1.43  |  
+| bread → milk           | 0.58       | 1.40  |  
+| milk → bread           | 0.70       | 1.40  |  
+
+
+
+---
+
+### **4. Analysis**
+The strongest pattern was **rice → pasta** with a lift of **1.48**,  
+indicating customers buying rice are significantly more likely to also  
+buy pasta. The **beer–bread** and **bread–milk** relationships reflect  
+common lifestyle and grocery shopping habits.
+
+---
+
+### **5. Applications**
+- **Retail:** Group rice and pasta together in aisles for cross-selling  
+- **E-commerce:** "Frequently bought together" product suggestions  
+- **Promotions:** Bundle bread and milk at a discount to boost sales  
+- **Inventory Planning:** Ensure stock availability of high-association pairs
+
+> **Note:** Because the dataset was synthetic, some patterns may be  
+  exaggerated compared to real-world transactions. However, the methodology  
+  and analysis remain directly applicable to real retail datasets.
+
+---
+
+
