@@ -1124,3 +1124,167 @@ pip install pandas numpy scikit-learn seaborn matplotlib
 python preprocessing_iris.py
 ```
 ---
+
+## Task 2: Clustering 
+
+## Task 2: Clustering
+
+### Objective
+The aim of this task was to perform **unsupervised clustering** on the preprocessed Iris dataset from Task 1 using **K-Means**. The dataset contains measurements of iris flowers along with encoded species labels.
+
+### Methodology
+1. **Data Preparation**  
+   - Loaded the cleaned dataset from Task 1.  
+   - Selected only the numerical feature columns: *sepal length*, *sepal width*, *petal length*, *petal width*.  
+   - Excluded the encoded species columns from clustering to simulate an unlabelled scenario.
+
+2. **Model Training & Evaluation**  
+   - Applied **K-Means** with `k=3` (expected number of species).  
+   - Predicted cluster assignments and compared them with true species labels using the **Adjusted Rand Index (ARI)** for performance measurement.  
+   - Repeated the process for `k=2` and `k=4` to study underfitting and overfitting cases.
+
+3. **Optimal k Determination**  
+   - Used the **Elbow Method** to plot inertia against different `k` values.  
+   - Identified the “elbow” point at `k=3`, confirming it as the optimal cluster count.
+
+![alt text](Section4_Data_Mining/task2_clustering/visualizations_clustering/elbow_method.png)
+
+4. **Visualization**  
+   - Created a **scatter plot** of petal length vs. petal width, colored by predicted clusters for `k=3`.  
+   - The plot clearly separated *setosa* from the other two species, while *versicolor* and *virginica* showed partial overlap.
+
+![alt text](Section4_Data_Mining/task2_clustering/visualizations_clustering/kmeans3_clustering.png)
+
+### Results
+| k   | ARI    | Interpretation                |
+|-----|--------|--------------------------------|
+| 2   | 0.5681 | Underfit: merged two species  |
+| 3   | 0.7163 | **Optimal clustering**        |
+| 4   | 0.6231 | Overfit: split one species    |
+
+- **Setosa**: Perfectly isolated in most runs.
+- **Versicolor** & **Virginica**: Showed some overlap due to similar petal/sepal sizes.
+
+*** Code used ***
+```python
+
+
+"""
+Task 2: Clustering (15 Marks)
+-----------------------------
+We perform K-Means clustering on the preprocessed Iris dataset from Task 1.
+Steps:
+1. Load dataset from CSV (output from Task 1 preprocessing).
+2. Extract features (X) and reconstruct actual species labels (y) from one-hot encoding.
+3. Run K-Means with k=3 and evaluate with Adjusted Rand Index (ARI).
+4. Run experiments with k=2 and k=4.
+5. Generate an Elbow Method plot to justify the optimal k.
+6. Create scatter plot visualization of clusters.
+"""
+
+# ==============================
+# IMPORT LIBRARIES
+# ==============================
+import pandas as pd
+from sklearn.cluster import KMeans
+from sklearn.metrics import adjusted_rand_score
+import matplotlib.pyplot as plt
+
+# ==============================
+# STEP 1: Load Preprocessed Data
+# ==============================
+# Load the CSV from Task 1 output
+iris_df = pd.read_csv(
+    r"C:\Users\use\Desktop\DSA2040_Practical\DSA2040_Practical_Exam_SelmahTzindori602\Section4_Data_Mining\task1_prep_explore\iris_preprocessed.csv"
+)
+
+# ==============================
+# STEP 2: Extract Features (X) and Labels (y)
+# ==============================
+# Features: first 4 columns (numeric measurements)
+X = iris_df.iloc[:, :4]
+
+# Labels: reverse the one-hot encoding
+y = iris_df[['setosa', 'versicolor', 'virginica']].idxmax(axis=1)
+
+# ==============================
+# STEP 3: K-Means with k=3
+# ==============================
+kmeans_3 = KMeans(n_clusters=3, random_state=42, n_init=10)
+kmeans_3.fit(X)
+
+# Predicted cluster labels
+clusters_3 = kmeans_3.labels_
+
+# ARI for k=3
+ari_3 = adjusted_rand_score(y, clusters_3)
+print(f"Adjusted Rand Index (k=3): {ari_3:.4f}")
+
+# ==============================
+# STEP 4: Experiments with k=2 and k=4
+# ==============================
+# k=2
+kmeans_2 = KMeans(n_clusters=2, random_state=42, n_init=10)
+kmeans_2.fit(X)
+clusters_2 = kmeans_2.labels_
+ari_2 = adjusted_rand_score(y, clusters_2)
+print(f"Adjusted Rand Index (k=2): {ari_2:.4f}")
+
+# k=4
+kmeans_4 = KMeans(n_clusters=4, random_state=42, n_init=10)
+kmeans_4.fit(X)
+clusters_4 = kmeans_4.labels_
+ari_4 = adjusted_rand_score(y, clusters_4)
+print(f"Adjusted Rand Index (k=4): {ari_4:.4f}")
+
+# ==============================
+# STEP 5: Elbow Method (k=1 to 6)
+# ==============================
+inertia_values = []
+k_values = range(1, 7)
+
+for k in k_values:
+    km = KMeans(n_clusters=k, random_state=42, n_init=10)
+    km.fit(X)
+    inertia_values.append(km.inertia_)
+
+plt.figure(figsize=(6, 4))
+plt.plot(k_values, inertia_values, marker='o')
+plt.xlabel("Number of Clusters (k)")
+plt.ylabel("Inertia")
+plt.title("Elbow Method for Optimal k")
+plt.grid(True)
+plt.show()
+
+# ==============================
+# STEP 6: Scatter Plot for k=3
+# ==============================
+plt.figure(figsize=(6, 4))
+plt.scatter(X.iloc[:, 2], X.iloc[:, 3], c=clusters_3, cmap='viridis', s=50, edgecolors='k')
+plt.xlabel("Petal Length (cm)")
+plt.ylabel("Petal Width (cm)")
+plt.title("K-Means Clustering (k=3)")
+plt.show()
+
+# ==============================
+# STEP 7: Summary of Results
+# ==============================
+print("\n=== Adjusted Rand Index Results ===")
+print(f"k=2: {ari_2:.4f}")
+print(f"k=3: {ari_3:.4f} (expected optimal)")
+print(f"k=4: {ari_4:.4f}")
+
+```
+### Analysis
+The **k=3** configuration achieved the highest ARI score (0.7163), making it the most accurate clustering configuration for this dataset.  
+Underfitting (`k=2`) caused distinct species to merge, while overfitting (`k=4`) fragmented natural groups unnecessarily.  
+This methodology demonstrates the effectiveness of combining **visual analysis** (Elbow Method & scatter plots) with **quantitative metrics** (ARI) for determining the optimal cluster count.  
+
+### Real-World Relevance
+K-Means clustering can be applied in various domains, such as:
+- **Customer segmentation** for targeted marketing
+- **Image compression** by grouping similar pixels
+- **Genetic research** for grouping organisms by similarity
+
+The Iris dataset serves as an ideal demonstration due to its clear group structure and manageable size.
+---
