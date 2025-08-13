@@ -1098,12 +1098,15 @@ print("\nPreprocessed data saved to 'iris_preprocessed.csv'.")
 
 **Function:** `split_data(X, y, test_size=0.2, random_state=42)`
 
-**Class distribution after split:**
+**Class distribution after split (using `iris_df` with original species labels):**
 
 | Split | setosa | versicolor | virginica | Total |
 |-------|--------|------------|-----------|-------|
 | Train | 40     | 40         | 40        | 120   |
 | Test  | 10     | 10         | 10        | 30    |
+
+> This balanced distribution is due to `train_test_split(..., stratify=y)` which preserves class proportions in both training and test sets.
+
 
 ---
 
