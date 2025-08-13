@@ -791,3 +791,167 @@ def run_etl(csv_file='synthetic_retail_data.csv', db_file='retail_dw.db'):
 
 ```python
 df, customer_summary = run_etl()
+```
+---
+
+# Task 3: OLAP Queries and Analysis
+
+## Overview
+This task uses the Retail Data Warehouse created in Task 2 to perform OLAP-style queries, generate visualizations, and analyze sales trends.
+
+---
+
+## Files Included
+- `olap_queries.ipynb`:Runs the queries
+- `retail_dw.db` : SQLite Data Warehouse:connects notebook to database
+- `queries_results/rollup_sales_by_country_quarter.csv`:saves results of roll up query
+- `queries_results/drilldown_monthly_sales_australia.csv`:saves results of drilldown query
+- `queries_results/slice_total_electronics_by_country.csv`:saves results of slice query
+-  queries_visualizations (`.png`) generated from the notebook
+
+---
+
+## OLAP Queries Executed
+
+1. **Roll-Up:** Total sales by country and quarter.
+
+**Query executed**
+
+```sql
+-- 1. ROLL-UP QUERY: Total Sales by Country and Quarter
+-- Groups sales by country and quarter
+SELECT 
+    c.country,
+    printf('%d-Q%d', strftime('%Y', t.date), ((CAST(strftime('%m', t.date) AS INTEGER)-1)/3 + 1)) AS quarter,
+    SUM(f.total_sales) AS total_sales
+FROM SalesFact f
+JOIN CustomerDim c ON f.customer_id = c.customer_id
+JOIN TimeDim t ON f.time_id = t.time_id
+GROUP BY c.country, quarter
+ORDER BY c.country, quarter;
+
+```
+
+**Sample results**
+| Country        | Quarter  | Total Sales     |
+|----------------|----------|----------------|
+| Australia      | 2024-Q3  | 49244.16       |
+| Australia      | 2024-Q4  | 122916.82      |
+| Australia      | 2025-Q1  | 148441.49      |
+| Australia      | 2025-Q2  | 116179.74      |
+| Australia      | 2025-Q3  | 78452.06       |
+| Canada         | 2024-Q3  | 81368.42       |
+| Canada         | 2024-Q4  | 147718.08      |
+| Canada         | 2025-Q1  | 173046.31      |
+| Canada         | 2025-Q2  | 207176.49      |
+| Canada         | 2025-Q3  | 83654.95       |
+| France         | 2024-Q3  | 58846.11       |
+| France         | 2024-Q4  | 155004.28      |
+| France         | 2025-Q1  | 182531.64      |
+| France         | 2025-Q2  | 98011.72       |
+
+
+---
+2. **Drill-Down:** Monthly sales details for Australia.
+
+```sql
+-- 2. DRILL-DOWN QUERY: Monthly Sales Details for Australia
+-- Provides detailed sales information per month
+SELECT 
+    strftime('%Y-%m', t.date) AS month,
+    f.invoice_no,
+    f.stock_code,
+    f.description,
+    f.quantity,
+    f.total_sales
+FROM SalesFact f
+JOIN CustomerDim c ON f.customer_id = c.customer_id
+JOIN TimeDim t ON f.time_id = t.time_id
+WHERE c.country = 'Australia'
+ORDER BY month, f.invoice_no;
+
+```
+**Sample Output**
+| Month   | Invoice No | Stock Code | Description       | Quantity | Total Sales |
+|---------|------------|------------|-----------------|----------|------------|
+| 2024-08 | INV10834   | P1845      | Pattern Cultural | 17       | 726.24     |
+| 2024-08 | INV10073   | P1916      | With Conference  | 34       | 559.64     |
+| 2024-08 | INV10667   | P6632      | Friend Will      | 17       | 54.06      |
+| 2024-08 | INV10898   | P7325      | Set Process      | 19       | 1222.08    |
+| 2024-08 | INV10206   | P2790      | Future Big       | 49       | 914.83     |
+| 2024-08 | INV10546   | P1444      | Notice His       | 13       | 1017.38    |
+| 2024-08 | INV10834   | P1845      | Pattern Cultural | 17       | 726.24     |
+| 2024-08 | INV10073   | P1916      | With Conference  | 34       | 559.64     |
+| 2024-08 | INV10667   | P6632      | Friend Will      | 17       | 54.06      |
+| 2024-08 | INV10898   | P7325      | Set Process      | 19       | 1222.08    |
+| 2024-08 | INV10206   | P2790      | Future Big       | 49       | 914.83     |
+| 2024-08 | INV10546   | P1444      | Notice His       | 13       | 1017.38    |
+| 2024-08 | INV10834   | P1845      | Pattern Cultural | 17       | 726.24     |
+
+---
+
+3. **Slice:** Total sales for Electronics category by country.
+
+```sql
+-- 3. SLICE QUERY: Total Sales for Electronics Category
+-- Sums sales only for products in the 'Electronics' category
+SELECT 
+    c.country,
+    SUM(f.total_sales) AS total_sales
+FROM SalesFact f
+JOIN CustomerDim c ON f.customer_id = c.customer_id
+JOIN TimeDim t ON f.time_id = t.time_id
+WHERE f.category = 'Electronics'
+GROUP BY c.country
+ORDER BY total_sales DESC;
+
+```
+
+**Sample output**
+| Country        | Total Sales     |
+|----------------|----------------|
+| Canada         | 132298.68      |
+| Netherlands    | 96928.01       |
+| USA            | 66931.01       |
+| France         | 65320.45       |
+| Germany        | 52102.62       |
+| Australia      | 48081.77       |
+| United Kingdom | 48037.41       |
+
+---
+
+## Visualizations
+- Bar charts generated for each query to highlight trends and patterns.
+
+---
+
+![alt text](Section3_OLAP_Queries_Analysis/queries_visualizations/monthlysales_australia.png)
+
+---
+![alt text](Section3_OLAP_Queries_Analysis/queries_visualizations/salesbycountrybyquarter.png)
+---
+
+![alt text](Section3_OLAP_Queries_Analysis/queries_visualizations/total_electronic_sales.png)
+
+---
+
+## Analysis & Insights
+- The Netherlands and United Kingdom are top-selling countries overall.  
+- Monthly sales drill-down shows seasonal fluctuations for Australia.  
+- Electronics category is strongest in Canada, highlighting region-specific opportunities.  
+- The warehouse enables structured decision-making by summarizing sales at multiple granularities.
+
+| Section | Summary | Observations & Insights | Implications / Decision Support |
+|---------|---------|------------------------|--------------------------------|
+| **Roll-Up Analysis** (Total Sales by Country & Quarter) | Aggregates sales at a higher level of granularity. | Top-performing countries: Netherlands, United Kingdom, Canada. Sales fluctuate seasonally, with peaks in Q1 and Q2 of 2025. | Resource allocation and marketing campaigns can be prioritized for high-performing countries during peak quarters. |
+| **Drill-Down Analysis** (Monthly Sales for Australia) | Provides detailed monthly view for Australia. | Highest monthly sales in January 2025; dips in December 2024 and August 2024. | Seasonal promotions, inventory planning, and localized marketing strategies can be optimized based on monthly trends. |
+| **Slice Analysis** (Total Electronics Sales by Country) | Focuses on electronics category to evaluate product-specific performance. | Canada, Netherlands, and USA lead in electronics sales; Australia and UK show lower totals. | Supports targeted marketing, stocking, and supply chain strategies for top-performing regions. |
+| **General Insights & Limitations** | OLAP queries support aggregation and detailed analysis. | Warehouse enables strategic and tactical decision-making. Synthetic data may not reflect real-world trends. | Real business decisions require authentic sales data; warehouse demonstrates ETL and OLAP effectively. |
+| **Conclusion** | Combines insights from all three OLAP perspectives. | Country-level and category-level sales patterns identified. | Enables informed operational and strategic planning. |
+
+
+## Notes
+- Data is synthetic; trends may not reflect real market behavior.  
+- CSV and image files contain query results and visualizations for reporting.
+
+---
