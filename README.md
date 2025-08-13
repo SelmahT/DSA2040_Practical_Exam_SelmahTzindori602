@@ -955,3 +955,169 @@ ORDER BY total_sales DESC;
 - CSV and image files contain query results and visualizations for reporting.
 
 ---
+
+# Section:Data Mining
+## Task 1 — Data Preprocessing & Exploration (Iris Dataset)
+
+###  Overview
+This section demonstrates **loading**, **preprocessing**, **exploration**, and **train–test splitting** of the Iris dataset using Python.  
+We follow the task requirements exactly, generating all outputs and saving the processed dataset for future use.
+
+---
+
+##  Dataset Details
+- **Source:** Built-in `sklearn.datasets.load_iris`
+- **Samples:** 150
+- **Features:**
+  - Sepal length (cm)
+  - Sepal width (cm)
+  - Petal length (cm)
+  - Petal width (cm)
+- **Target:** Species (`setosa`, `versicolor`, `virginica`)
+
+---
+
+##  Preprocessing Steps
+
+###  Check Missing Values
+| Column             | Missing Values |
+|--------------------|----------------|
+| sepal length (cm)  | 0              |
+| sepal width (cm)   | 0              |
+| petal length (cm)  | 0              |
+| petal width (cm)   | 0              |
+| species            | 0              |
+
+> **Result:** No missing values — no imputation required.
+
+---
+
+###  Min–Max Scaling
+Scaled all numeric features to **[0, 1]**.
+
+**Example (first 5 rows):**
+
+| sepal length (cm) | sepal width (cm) | petal length (cm) | petal width (cm) | species |
+|-------------------|------------------|-------------------|------------------|---------|
+| 0.2222            | 0.6250           | 0.0678            | 0.0417           | setosa  |
+| 0.1667            | 0.4167           | 0.0678            | 0.0417           | setosa  |
+| 0.1111            | 0.5000           | 0.0508            | 0.0417           | setosa  |
+| 0.0833            | 0.4583           | 0.0847            | 0.0417           | setosa  |
+| 0.1944            | 0.6667           | 0.0678            | 0.0417           | setosa  |
+
+---
+
+### One-Hot Encoding
+Converted `species` column into three binary columns: `setosa`, `versicolor`, `virginica`.
+
+**Example (first 5 rows):**
+
+| sepal length (cm) | sepal width (cm) | petal length (cm) | petal width (cm) | setosa | versicolor | virginica |
+|-------------------|------------------|-------------------|------------------|--------|------------|-----------|
+| 0.2222            | 0.6250           | 0.0678            | 0.0417           | 1.0    | 0.0        | 0.0       |
+| 0.1667            | 0.4167           | 0.0678            | 0.0417           | 1.0    | 0.0        | 0.0       |
+| 0.1111            | 0.5000           | 0.0508            | 0.0417           | 1.0    | 0.0        | 0.0       |
+| 0.0833            | 0.4583           | 0.0847            | 0.0417           | 1.0    | 0.0        | 0.0       |
+| 0.1944            | 0.6667           | 0.0678            | 0.0417           | 1.0    | 0.0        | 0.0       |
+
+---
+
+***Code Used***
+```python
+# Step 2: Data Preprocessing (Corrected)
+
+# Import preprocessing tools
+from sklearn.preprocessing import MinMaxScaler, OneHotEncoder
+
+# 1. Check for missing values
+print("Missing values in each column:\n")
+print(iris_df.isnull().sum())
+
+# 2. Normalize features using Min-Max scaling
+scaler = MinMaxScaler()  # Create a MinMaxScaler object
+features = iris_df.columns[:-1]  # All columns except 'species'
+iris_df[features] = scaler.fit_transform(iris_df[features])
+
+# Verify normalization
+print("\nFirst 5 rows after normalization:\n")
+print(iris_df.head())
+
+# 3. Encode class labels using One-Hot Encoding
+encoder = OneHotEncoder(sparse_output=False)  # Updated for scikit-learn >=1.2
+species_encoded = encoder.fit_transform(iris_df[['species']])
+
+# Convert to DataFrame for clarity
+species_df = pd.DataFrame(species_encoded, columns=encoder.categories_[0])
+iris_df_encoded = pd.concat([iris_df[features], species_df], axis=1)
+
+print("\nFirst 5 rows with one-hot encoded species:\n")
+print(iris_df_encoded.head())
+
+# 4. Save the preprocessed dataset to CSV
+iris_df_encoded.to_csv("iris_preprocessed.csv", index=False)
+print("\nPreprocessed data saved to 'iris_preprocessed.csv'.")
+
+```
+
+##  Data Exploration
+
+### 3.1 Summary Statistics
+| Metric | Sepal Length | Sepal Width | Petal Length | Petal Width |
+|--------|--------------|-------------|--------------|-------------|
+| Count  | 150.000      | 150.000     | 150.000      | 150.000     |
+| Mean   | 0.4287       | 0.4406      | 0.4675       | 0.4581      |
+| Std    | 0.2300       | 0.1816      | 0.2992       | 0.3176      |
+| Min    | 0.0000       | 0.0000      | 0.0000       | 0.0000      |
+| 25%    | 0.2222       | 0.3333      | 0.1017       | 0.0833      |
+| 50%    | 0.4167       | 0.4167      | 0.5678       | 0.5000      |
+| 75%    | 0.5833       | 0.5417      | 0.6949       | 0.7083      |
+| Max    | 1.0000       | 1.0000      | 1.0000       | 1.0000      |
+
+---
+
+### 3.2 Visualizations
+- **Pairplot:** Shows clear separation of `setosa`, moderate overlap between `versicolor` and `virginica` in sepal space.
+
+![alt text](Section4_Data_Mining/task1_prep_explore/Visualizations_eda/pairplot_iris.png)
+
+---
+
+- **Correlation Heatmap:** Petal length and petal width are highly correlated (~0.96).
+
+![alt text](Section4_Data_Mining/task1_prep_explore/Visualizations_eda/correlation_iris.png)
+
+---
+
+- **Boxplots:** Detect potential mild outliers in sepal dimensions.
+
+![alt text](Section4_Data_Mining/task1_prep_explore/Visualizations_eda/boxplots_iris.png)
+
+---
+
+##  Train/Test Split
+
+**Function:** `split_data(X, y, test_size=0.2, random_state=42)`
+
+**Class distribution after split:**
+
+| Split | setosa | versicolor | virginica | Total |
+|-------|--------|------------|-----------|-------|
+| Train | 40     | 40         | 40        | 120   |
+| Test  | 10     | 10         | 10        | 30    |
+
+---
+
+## 5 Output Files
+- `iris_preprocessed.csv` — normalized + encoded dataset
+- `pairplot.png` — pairwise scatter plot
+- `heatmap.png` — correlation heatmap
+- `boxplots.png` — boxplots for outlier detection
+
+---
+
+##  How to Run
+```bash
+pip install pandas numpy scikit-learn seaborn matplotlib
+python preprocessing_iris.py
+```
+---
